@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Welcome, Shivansh!</h2>
+<p>Overview of your e-commerce store:</p>
+
+<div class="cards">
+    <div class="card" id="categ" data-link="/admin/category">
+        <i class="fa-solid fa-tags"></i>
+        <h3 id="totalcateg"></h3>
+        <p>Categories</p>
+    </div>
+    <div class="card" data-link="/admin/product/">
+        <i class="fa-solid fa-box"></i>
+        <h3 id="totalprod"></h3>
+        <p>Total Products</p>
+    </div>
+    
+    <div class="card" data-link="/admin/users">
+        <i class="fa-solid fa-user"></i>
+        <h3 id="totaluser"></h3>
+        <p>Total Users</p>
+    </div>
+    <div class="card" data-link="/BreachedProducts">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <h3>5</h3>
+        <p>Breached Products</p>
+    </div>
+    
+    <div class="chart-grid">
+
+        <div class="chart-card">
+            <h4>Monthly Users</h4>
+            <canvas id="userChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h4>Category Distribution</h4>
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+    </div>
+
+</div>
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            url: '/api/AdminApi/dashcount',
+            type: 'GET',
+            success: function (res) {
+
+                $("#totaluser").text(res.totalUsers);
+                $("#totalcateg").text(res.totalCategories);
+                $("#totalprod").text(res.totalProducts);
+            }
+        });
+
+    });
+        <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // 📊 Bar Chart
+        const userCtx = document.getElementById('userChart');
+
+        new Chart(userCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Users',
+                    data: [12, 19, 8, 15, 22, 30],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+
+        // 🥧 Pie Chart
+        const categoryCtx = document.getElementById('categoryChart');
+
+        new Chart(categoryCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Electronics', 'Clothes', 'Sports', 'Books'],
+                datasets: [{
+                    data: [30, 20, 25, 15]
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+
+    });
+
+
+</script>

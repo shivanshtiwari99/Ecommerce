@@ -1,0 +1,331 @@
+﻿@{
+    ViewData["Title"] = "Products";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <div class="header-left">
+        <h2>All Products </h2>
+        <span class="total-badge"><span id="totalProducts">0</span> Total</span>
+    </div>
+
+    <div class="header-right">
+        <input type="text" id="searchProduct" placeholder="Search product..." />
+        <button data-bs-toggle="modal" id="addprod" data-bs-target="#exampleModal" class="add-btn">
+            <i class="fa-solid fa-plus"></i> Add Product
+        </button>
+    </div>
+</div>
+
+<div class="card-grid" id="product_container"></div>
+
+<div class="row">
+    <div class="col-sm-10 mx-auto">
+        <!--Modal-->
+        @* <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary mb-5" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Add Category
+        </button> *@
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Add Category</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!--Add Category Form-->
+                        <div class="row">
+                            <div class="col-sm-10 mx-auto mt-2 py-4 px-2 border border-3 rounded-3">
+                                <form method="post" enctype="multipart/form-data">
+                                    <input type="text" id="p_name" name="p_name" placeholder="Enter Product Name..." class="form-control mb-3" />
+                                    <input type="number" id="p_price" name="p_price" placeholder="Enter Product Price..." class="form-control mb-3" />
+                                    <select id="c_id" name="c_id" class="form-control mb-3">
+                                        <option>--Select Your Category--</option>
+                                    </select>
+                                    <textarea class="form-control mb-3" id="p_desc" placeholder="Description" name="p_desc"></textarea>
+                                    <input type="file" id="p_picture" name="p_picture" class="form-control mb-3" />
+                                    <center>
+                                        <input type="button" id="addbtn" value="Add Product" class="btn btn-primary form-control w-50" />
+                                    </center>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        loadProducts();
+
+        function loadProducts() {
+            $.ajax({
+                url: '/api/AdminApi/products',
+                type: 'GET',
+                success: function (res) {
+
+                    let container = $("#product_container");
+                    container.empty();
+
+                    $("#totalProducts").text(res.length);
+
+                    $.each(res, function (index, ele) {
+
+                        let card = `
+                        <div class="card-item" data-name="${ele.p_name.toLowerCase()}">
+
+                            <div class="card-top">
+                                <div class="card-title">
+                                    <i class="fa-solid fa-industry"></i>
+                                    <h3 class="fs-5">${ele.p_name}</h3>
+                                </div>
+                                <span class="status-badge">Active</span>
+                            </div>
+
+                            <div class="price-badge">
+                                ₹ ${ele.p_price}
+                            </div>
+
+                            <p class="description">
+                                ${ele.p_desc}
+                            </p>
+
+                            <div class="card-actions">
+                                <a href="/Product/Edit/${ele.p_id}" class="btn-edit">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <a href="/Product/Delete/${ele.p_id}" class="btn-delete">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                        `;
+
+                        container.append(card);
+                    });
+                }
+            });
+        }
+
+        $("#addbtn").click(function () {
+
+            var formData = new FormData();
+
+            formData.append("p_name", $("#p_name").val());
+            formData.append("p_price", $("#p_price").val());
+            formData.append("c_id", $("#c_id").val());
+            formData.append("p_desc", $("#p_desc").val());
+
+            var fileInput = $("#p_picture")[0];
+            if (fileInput.files.length > 0) {
+                formData.append("imageFile", fileInput.files[0]);
+            }
+
+            $.ajax({
+                url: "/api/Adminapi/addproduct",   // Controller route
+                type: "POST",
+                data: formData,
+                contentType: false,   // Important for file upload
+                processData: false,   // Important for file upload
+                success: function (response) {
+                    alert(response);
+                    $("form")[0].reset();
+                },
+                error: function (err) {
+                    alert("Error while adding product");
+                    console.log(err);
+                }
+            });
+
+        });
+
+
+        $("#addprod").click(function(){
+            $.ajax({
+                url:'/api/Adminapi/categories',
+                type:'GET',
+                success:function(res){
+                    let container=$("#c_id");
+                    container.empty();
+                    $.each(res,function(ind,ele)
+                    {
+                        let option=`
+                            <option value="${ele.c_id}">${ele.c_name}</option>
+                            `;
+                            container.append(option);
+                    })
+                },
+                error:function()
+                {
+                     Swal.fire("Error!", "Failed to load categories.", "error");
+                }
+            })
+        })
+
+        // Search
+        $("#searchProduct").on("keyup", function () {
+            let value = $(this).val().toLowerCase();
+
+            $(".card-item").filter(function () {
+                $(this).toggle($(this).data("name").includes(value));
+            });
+        });
+
+    });
+</script>
+<style>
+    body {
+        background: #f4f6f7;
+    }
+
+    /* HEADER */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .header-left h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+    .total-badge {
+        background: #d4efdf;
+        color: #117a65;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+    }
+
+    .header-right {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+        .header-right input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 220px;
+            font-size: 14px;
+        }
+
+    .add-btn {
+        background: #117a65;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    /* GRID */
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 22px;
+    }
+
+    /* CARD */
+    .card-item {
+        background: #ffffff;
+        padding: 22px;
+        border-radius: 16px;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+    }
+
+    /* TOP */
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .card-title i {
+            color: #117a65;
+            font-size: 18px;
+        }
+
+        .card-title h3 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+    .status-badge {
+        background: #d5f5e3;
+        color: #1e8449;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
+
+    /* PRICE */
+    .price-badge {
+        margin-top: 15px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #2e86c1;
+    }
+
+    /* DESCRIPTION */
+    .description {
+        margin-top: 12px;
+        font-size: 14px;
+        color: #555;
+        min-height: 30px;
+    }
+
+    /* ACTIONS */
+    .card-actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-edit,
+    .btn-delete {
+        flex: 1;
+        padding: 6px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .btn-edit {
+        background: #d6eaf8;
+        color: #21618c;
+    }
+
+    .btn-delete {
+        background: #f5b7b1;
+        color: #922b21;
+    }
+</style>
