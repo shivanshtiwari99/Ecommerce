@@ -94,7 +94,7 @@ namespace ecomm.Controllers
         [HttpPut("updatecategory")]
         public IActionResult UpdateCategory([FromForm] UpdateCategory model,[FromForm] IFormFile? file,[FromForm] string? oldImage)
         {
-            string fileName = oldImage; // default old image
+            string fileName = oldImage; 
 
             if (file != null)
             {
@@ -103,7 +103,7 @@ namespace ecomm.Controllers
                 if (!Directory.Exists(folderPath))
                     Directory.CreateDirectory(folderPath);
 
-                // Delete old image
+                
                 if (!string.IsNullOrEmpty(oldImage))
                 {
                     string oldPath = Path.Combine(folderPath, oldImage);
@@ -111,7 +111,7 @@ namespace ecomm.Controllers
                         System.IO.File.Delete(oldPath);
                 }
 
-                // Save new image
+                
                 fileName = Path.GetFileName(file.FileName);
                 string newPath = Path.Combine(folderPath, fileName);
 
@@ -121,7 +121,7 @@ namespace ecomm.Controllers
                 }
             }
 
-            // Set image name in model
+            
             model.c_picture = "/Photos/Category/" + fileName;
 
             _categ.UpdateCategory(model);
@@ -186,28 +186,26 @@ namespace ecomm.Controllers
                 if (!Directory.Exists(uploadPath))
                     Directory.CreateDirectory(uploadPath);
 
-                // ✅ If new image uploaded
+                
                 if (imageFile != null && imageFile.Length > 0)
                 {
-                    // Same original file name use karna
+                    
                     string fileName = imageFile.FileName;
 
                     string filePath = Path.Combine(uploadPath, fileName);
 
-                    // File overwrite karega agar same naam already hai
+                   
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         imageFile.CopyTo(stream);
                     }
 
-                    model.p_picture ="/Photos/Product/"+ fileName; // new image name
+                    model.p_picture ="/Photos/Product/"+ fileName; 
                 }
-                // ✅ If NO new image uploaded
+                
                 else
                 {
-                    // Old image AJAX se already aa rahi hai
-                    // Isliye model.p_picture me purani value hi rahegi
-                    // Yaha kuch karne ki zarurat nahi
+                    
                 }
 
                 _prod.UpdateProduct(model);

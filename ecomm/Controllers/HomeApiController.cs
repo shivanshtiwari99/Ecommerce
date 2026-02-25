@@ -30,16 +30,14 @@ namespace ecomm.Controllers
         [HttpPost("Login")]
         public IActionResult Login([FromBody] Login list)
         {
-            // Validate user using your IUserServices
-            var userData = _user.Login(list); // returns list of matching users
+            
+            var userData = _user.Login(list); 
 
             if (userData.Count == 0)
                 return BadRequest("Invalid Email Or Password");
 
-            // ✅ Get role from your user (for demo, assuming first user)
             var role = userData[0].role ?? "User";
 
-            // ✅ Create JWT token
             var claims = new[]
             {
         new Claim(System.Security.Claims.ClaimTypes.Name, list.email),
