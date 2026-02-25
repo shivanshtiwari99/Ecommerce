@@ -42,7 +42,7 @@
                         let card = `
                             <div class="card-item" data-name="${ele.p_name.toLowerCase()}">
 
-        <!-- 🔹 Image Section -->
+        
         <div class="card-image p-0 m-0">
             <img src="${ele.p_picture}" alt="${ele.p_name}">
         </div>
@@ -77,9 +77,6 @@
             });
         }
 
-        
-
-        
         $("#searchProduct").on("keyup", function () {
             let value = $(this).val().toLowerCase();
 
@@ -101,7 +98,6 @@
         overflow: hidden;
         border-radius: 20px;
     }
-
         .card-image img {
             width: 100%;
             height: 100%;

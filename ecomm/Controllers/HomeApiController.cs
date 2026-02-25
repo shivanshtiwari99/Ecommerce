@@ -37,10 +37,10 @@ namespace ecomm.Controllers
                 return BadRequest("Invalid Email Or Password");
 
             var role = userData[0].role ?? "User";
-
+            
             var claims = new[]
             {
-        new Claim(System.Security.Claims.ClaimTypes.Name, list.email),
+        new Claim(System.Security.Claims.ClaimTypes.Email, list.email),
         new Claim(System.Security.Claims.ClaimTypes.Role, role)
     };
 

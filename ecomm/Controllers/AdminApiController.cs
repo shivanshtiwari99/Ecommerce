@@ -111,7 +111,6 @@ namespace ecomm.Controllers
                         System.IO.File.Delete(oldPath);
                 }
 
-                
                 fileName = Path.GetFileName(file.FileName);
                 string newPath = Path.Combine(folderPath, fileName);
 

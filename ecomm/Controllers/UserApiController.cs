@@ -24,11 +24,17 @@ namespace ecomm.Controllers
             
         }
 
-        [HttpGet("byiduser")]
-        public IActionResult GetUserById(int? uid)
+        [HttpGet("emailuser")]
+        public IActionResult GetUserByEmail(string? email)
         {
-            var id_user = _user.GetUserById(uid);
+            var id_user = _user.GetUserByEmail(email);
             return Ok(id_user);
+        }
+        [HttpPut("edituser")]
+        public IActionResult EditUser([FromBody] UpdateUser model)
+        {
+            _user.EditUser(model);
+            return Ok("User Updated Successfully");
         }
 
         [HttpGet("categories")]

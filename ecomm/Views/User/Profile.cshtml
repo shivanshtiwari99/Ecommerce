@@ -27,18 +27,83 @@
             </div>
 
             <div class="text-center mt-3">
-                <button class="btn btn-primary px-4">Edit Profile</button>
+                <button class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    Edit Profile
+                </button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+                <form>
+
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" id="editName" class="form-control" placeholder="Enter Name">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" id="editEmail" class="form-control" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mobile</label>
+                        <input type="text" id="editMobile" class="form-control" placeholder="Enter Mobile">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" id="editDob" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Gender</label>
+                        <select id="editGender" class="form-control">
+                            <option>Select Gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                        </select>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" id="btnUpdateProfile">
+                    Save Changes
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 <script>
     $(document).ready(function() {
-        var uid = 13; 
+        var token = localStorage.getItem("token");
+        if (token) 
+        {
+            var payload = JSON.parse(atob(token.split('.')[1]));
+            var email = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
+        }
 
         $.ajax({
-            url: '/api/UserApi/byiduser?uid=' + uid,
+            url: '/api/UserApi/emailuser?email=' + email,
             type: 'GET',
             headers: {
                 "Authorization": "Bearer " + localStorage.getItem("token") 
@@ -55,12 +120,96 @@
                 console.log("Failed to load profile");
             }
         });
+        $('#editProfileModal').on('show.bs.modal', function () {
+
+        var token = localStorage.getItem("token");
+        var payload = JSON.parse(atob(token.split('.')[1]));
+
+        var email = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
+
+        $.ajax({
+            url: '/api/UserApi/emailuser?email=' + email,
+            type: 'GET',
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            success: function (res) {
+
+                var user = res[0];
+
+                $("#editName").val(user.name);
+                $("#editEmail").val(user.email);
+                $("#editMobile").val(user.mobile);
+                $("#editDob").val(user.dob ? user.dob.split('T')[0] : '');
+                $("#editGender").val(user.gender);
+            }
+        });
+
+    });
+        $("#btnUpdateProfile").click(function () {
+
+        var token = localStorage.getItem("token");
+
+        var updatedUser = {
+            name: $("#editName").val(),
+            email: $("#editEmail").val(),   
+            mobile: $("#editMobile").val(),
+            dob: $("#editDob").val(),
+            gender: $("#editGender").val()
+        };
+
+        $.ajax({
+            url: '/api/UserApi/edituser',
+            type: 'PUT',  
+            contentType: 'application/json',
+            headers: {
+                "Authorization": "Bearer " + token
+            },
+            data: JSON.stringify(updatedUser),
+
+            success: function () {
+                Swal.fire("Success!", "User Updated Successfully", "success")
+                .then(() => {
+
+                $("#editProfileModal").modal('hide'); 
+                location.reload();
+                })
+            },
+
+            error: function () {
+                Swal.fire("Error!", "Update failed!", "error");
+            }
+        });
+
+    });
     });
 </script>
 
 <style>
+    body {
+        background: #f2f7f7; /* light teal background */
+        min-height: 100vh;
+    }
+
+    main {
+        padding: 50px 20px;
+    }
+
+    .d-flex.justify-content-center.align-items-start {
+        min-height: 100vh; /* full screen height */
+        padding-top: 100px;
+        background: linear-gradient(to bottom, #e0f7f7, #ffffff); /* subtle gradient */
+    }
+
     .card {
+        width: 400px; /* thoda bada */
         transition: 0.3s;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2); /* slightly stronger shadow */
+    }
+
+    .card-body p, .card-body strong {
+        font-size: 1.05rem;
+        margin-bottom: 0.8rem;
     }
 
         .card:hover {
