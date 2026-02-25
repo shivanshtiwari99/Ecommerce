@@ -37,6 +37,24 @@ namespace ecomm.Infrastructure.Services
                 cmd.ExecuteNonQuery();
             }
         }
+
+        public void UpdateUser(UpdateUser uumod)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                using SqlCommand cmd = new SqlCommand("sp_user", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@action", 5);
+                cmd.Parameters.AddWithValue("@name", uumod.name);
+                cmd.Parameters.AddWithValue("@email", uumod.email);
+                cmd.Parameters.AddWithValue("@password", uumod.password);
+                cmd.Parameters.AddWithValue("@mobile", uumod.mobile);
+                cmd.Parameters.AddWithValue("@dob", uumod.dob);
+                cmd.Parameters.AddWithValue("@gender", uumod.gender);
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
         public List<Login> Login(Login login)
         {
             List<Login> logins = new List<Login>();
@@ -85,6 +103,46 @@ namespace ecomm.Infrastructure.Services
                     list.Add(user);
                 }
                 return list;
+            }
+        }
+
+        public List<User_Reg> GetUserById(int? uid)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                using SqlCommand cmd = new SqlCommand("sp_user", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@action", 4);
+                cmd.Parameters.AddWithValue("@u_id", uid);
+                con.Open();
+                using SqlDataReader reader = cmd.ExecuteReader();
+                List<User_Reg> list = new List<User_Reg>();
+                while (reader.Read())
+                {
+                    User_Reg user = new User_Reg();
+                    user.u_id = Convert.ToInt32(reader["u_id"]);
+                    user.name = reader["name"].ToString();
+                    user.email = reader["email"].ToString();
+                    user.password = Convert.ToInt64(reader["password"]);
+                    user.mobile = reader["mobile"].ToString();
+                    user.dob = Convert.ToDateTime(reader["dob"]);
+                    user.gender = reader["gender"].ToString();
+
+                    list.Add(user);
+                }
+                return list;
+            }
+        }
+        public void DeleteUser(int? uid)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_user", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@action", 3);
+                cmd.Parameters.AddWithValue("@u_id", uid);
+                con.Open();
+                cmd.ExecuteNonQuery();
             }
         }
 

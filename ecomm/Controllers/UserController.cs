@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ecomm.Controllers
 {
+    //[Authorize(Roles = "user")]
     public class UserController : Controller
     {
+
         public IActionResult Home()
         {
             return View();

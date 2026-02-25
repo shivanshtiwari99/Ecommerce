@@ -35,6 +35,24 @@ namespace ecomm.Infrastructure.Services
                 cmd.ExecuteNonQuery();
             }
         }
+
+        public void UpdateProduct(UpdateProduct upmod)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_product", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@action", 5);
+                cmd.Parameters.AddWithValue("@p_id", upmod.p_id);
+                cmd.Parameters.AddWithValue("@p_name", upmod.p_name);
+                cmd.Parameters.AddWithValue("@c_id", upmod.c_id);
+                cmd.Parameters.AddWithValue("@p_price", upmod.p_price);
+                cmd.Parameters.AddWithValue("@p_desc", upmod.p_desc);
+                cmd.Parameters.AddWithValue("@p_picture", upmod.p_picture);
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
         public List<Product> AllProduct()
         {
             using (SqlConnection con = new SqlConnection(_connectionString))
@@ -74,7 +92,7 @@ namespace ecomm.Infrastructure.Services
                 while (reader.Read()) 
                 {
                     Product produ = new Product();
-                    produ.p_name = reader["p_price"].ToString();
+                    produ.p_name = reader["p_name"].ToString();
                     produ.p_desc = reader["description"].ToString();
                     produ.p_picture = reader["p_picture"].ToString();
                     produ.p_price = Convert.ToInt32(reader["p_price"]);
@@ -82,6 +100,45 @@ namespace ecomm.Infrastructure.Services
                     prod.Add(produ);
                 }
                 return prod;
+            }
+        }
+
+        public List<Product> GetProductById(int? pid)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_product", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@action", 6);
+                cmd.Parameters.AddWithValue("@p_id", pid);
+                con.Open();
+                List<Product> prod = new List<Product>();
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Product produ = new Product();
+                    produ.p_id = Convert.ToInt32(reader["p_id"]);
+                    produ.p_name = reader["p_name"].ToString();
+                    produ.p_desc = reader["description"].ToString();
+                    produ.p_picture = reader["p_picture"].ToString();
+                    produ.p_price = Convert.ToInt32(reader["p_price"]);
+                    produ.c_id = Convert.ToInt32(reader["c_id"]);
+                    produ.c_name = reader["c_name"].ToString();
+                    prod.Add(produ);
+                }
+                return prod;
+            }
+        }
+        public void DeleteProduct(int? pid)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                SqlCommand cmd = new SqlCommand("sp_product", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@action", 4);
+                cmd.Parameters.AddWithValue("@p_id", pid);
+                con.Open();
+                cmd.ExecuteNonQuery();
             }
         }
     }

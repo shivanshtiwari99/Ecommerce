@@ -41,6 +41,29 @@ namespace ecomm.Infrastructure.Services
                 return categories;
             }
         }
+
+        public List<Category> GetCategById(int? cid)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                using SqlCommand cmd = new SqlCommand("sp_categ", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@action", 4);
+                cmd.Parameters.AddWithValue("@c_id", cid);
+                con.Open();
+                using SqlDataReader reader = cmd.ExecuteReader();
+                List<Category> categories = new List<Category>();
+                while (reader.Read())
+                {
+                    Category category = new Category();
+                    category.c_id = Convert.ToInt32(reader["c_id"]);
+                    category.c_name = reader["c_name"].ToString();
+                    category.c_picture = reader["c_picture"].ToString();
+                    categories.Add(category);
+                }
+                return categories;
+            }
+        }
         public void AddCategory(Category categ)
         {
             using (SqlConnection con = new SqlConnection(_connectionString))
@@ -54,13 +77,28 @@ namespace ecomm.Infrastructure.Services
                 cmd.ExecuteNonQuery();
             }
         }
+
+        public void UpdateCategory(UpdateCategory ucmod)
+        {
+            using (SqlConnection con = new SqlConnection(_connectionString))
+            {
+                using SqlCommand cmd = new SqlCommand("sp_categ", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@action", 5);
+                cmd.Parameters.AddWithValue("@c_id", ucmod.c_id);
+                cmd.Parameters.AddWithValue("@c_name", ucmod.c_name);
+                cmd.Parameters.AddWithValue("@c_picture", ucmod.c_picture);
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
         public void DeleteCategory(int? cid)
         {
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand();
+                SqlCommand cmd = new SqlCommand("sp_categ",con);
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@acion", 2);
+                cmd.Parameters.AddWithValue("@action", 3);
                 cmd.Parameters.AddWithValue("@c_id", cid);
                 con.Open();
                 cmd.ExecuteNonQuery();

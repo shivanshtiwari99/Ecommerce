@@ -24,10 +24,19 @@
                     <input type="password" id="password" name="password" class="form-control" placeholder="Enter Your Password" aria-label="Username" aria-describedby="addon-wrapping">
                 </div>
                 
-                <div class="row mb-3">
+                <div class="row">
                     <div class="col-sm-7"></div>
                     <div class="col-sm-5">
                         <a href="#" class="text-decoration-none">Forgot Password ?</a>
+                    </div>
+
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-6"></div>
+                    @* <div class="col-sm-3">New User</div> *@
+                    <div class="col-sm-6">
+                        <span>New User -> </span>
+                        <a href="/home/registration" class="text-decoration-none text-decoration-underline"> Sign Up Now</a>
                     </div>
 
                 </div>
@@ -53,31 +62,30 @@
                 method:'POST',
                 contentType:'application/json',
                 data:JSON.stringify(loginData),
-                success: function (res) {
-                    var role = res[0].role.toLowerCase();
-                    if (role === "admin") {
-                        Swal.fire({
-                        icon: "success",
-                        title: "Welcome",
-                        text: "Admin Login Successful"
-                        }).
-                        then(() => {
-                            window.location.href = "/Admin/Dashboard";
-                        });
+                    success: function (res) {
+        
+        localStorage.setItem("token", res.token);
 
-                    }
-                    else if (role === "user") {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Welcome",
-                            text: "User Login Successful"
-                        }).
-                        then(() => {
-                            window.location.href = "/User/Category";
-                        });
+        var role = res.role.toLowerCase();
+        if (role === "admin") {
+            Swal.fire({
+                icon: "success",
+                title: "Welcome",
+                text: "Admin Login Successful"
+            }).then(() => {
+                window.location.href = "/Admin/Dashboard";
+            });
 
-                    }
-                },
+        } else if (role === "user") {
+            Swal.fire({
+                icon: "success",
+                title: "Welcome",
+                text: "User Login Successful"
+            }).then(() => {
+                window.location.href = "/User/Category";
+            });
+        }
+    },
                 error:function()
                 {
                     Swal.fire({

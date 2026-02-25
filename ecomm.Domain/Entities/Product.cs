@@ -13,6 +13,7 @@ namespace ecomm.Domain.Entities
         public int c_id { get; set; }
         public int p_price { get; set; }
         public string p_desc { get; set; }
+        public string? c_name { get; set; }
         public string? p_picture { get; set; }
     }
 }

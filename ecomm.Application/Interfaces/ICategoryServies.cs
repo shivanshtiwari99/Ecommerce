@@ -11,7 +11,8 @@ namespace ecomm.Application.Interfaces
     {
         void AddCategory(Category categ);
         List<Category> AllCategory();
-
         void DeleteCategory(int? cid);
+        List<Category> GetCategById(int? cid);
+        void UpdateCategory(UpdateCategory ucmod);
     }
 }

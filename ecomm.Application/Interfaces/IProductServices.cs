@@ -12,5 +12,8 @@ namespace ecomm.Application.Interfaces
         void AddProduct(Product prod);
         List<Product> AllProduct();
         List<Product> CategProduct(int? cid);
+        List<Product> GetProductById(int? pid);
+        void DeleteProduct(int? pid);
+        void UpdateProduct(UpdateProduct upmod);
     }
 }

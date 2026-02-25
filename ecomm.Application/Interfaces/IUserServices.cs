@@ -12,5 +12,9 @@ namespace ecomm.Application.Interfaces
         void AddUser(User_Reg user);
         List<Login> Login(Login login);
         List<User_Reg> GetUser();
+        List<User_Reg> GetUserById(int? uid);
+        void DeleteUser(int? uid);
+        void UpdateUser(UpdateUser uumod);
     }
+
 }

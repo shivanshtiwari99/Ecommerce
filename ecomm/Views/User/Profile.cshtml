@@ -2,3 +2,78 @@
 @{
     Layout = "~/Views/Shared/_UserLayout.cshtml";
 }
+    
+
+<div class="d-flex justify-content-center align-items-start" style="min-height: 80vh; padding-top:50px;">
+    <div class="card shadow-lg rounded-4 overflow-hidden" style="width: 350px;">
+
+        <!-- Top Banner -->
+        <div style="position: relative; height:80px; background: linear-gradient(to right, #008080, #00b3b3);">
+            <img src="/Photos/product/Cricket_2.webp" alt="Profile Avatar"
+                 style="width:120px; height:120px; border-radius:50%; border:5px solid white;
+                        position:absolute; bottom:-60px; left:50%; transform:translateX(-50%); object-fit:cover;">
+        </div>
+
+        <!-- Card Body -->
+        <div class="card-body mt-5 text-center">
+            <h3 id="userName" class="fw-bold mb-1">Loading...</h3>
+            <p id="userEmail" class="text-muted mb-3">Loading...</p>
+
+            <div class="text-start mt-3">
+                <p><strong>Mobile:</strong> <span id="userMobile">Loading...</span></p>
+                <p><strong>Date of Birth:</strong> <span id="userDob">Loading...</span></p>
+                <p><strong>Gender:</strong> <span id="userGender">Loading...</span></p>
+                <p><strong>Email:</strong> <span id="userEmail2">Loading...</span></p>
+            </div>
+
+            <div class="text-center mt-3">
+                <button class="btn btn-primary px-4">Edit Profile</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var uid = 13; 
+
+        $.ajax({
+            url: '/api/UserApi/byiduser?uid=' + uid,
+            type: 'GET',
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token") 
+            },
+            success: function(res){
+                $("#userName").text(res[0].name);
+                $("#userEmail").text(res[0].email);
+                $("#userEmail2").text(res[0].email);
+                $("#userMobile").text(res[0].mobile);
+                $("#userDob").text(res[0].dob ? res[0].dob.split('T')[0] : '');
+                $("#userGender").text(res[0].gender);
+            },
+            error: function(){
+                console.log("Failed to load profile");
+            }
+        });
+    });
+</script>
+
+<style>
+    .card {
+        transition: 0.3s;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+    #userName {
+        font-size: 1.6rem;
+    }
+
+    #userEmail, #userEmail2 {
+        font-size: 1rem;
+        color: #555;
+    }
+</style>

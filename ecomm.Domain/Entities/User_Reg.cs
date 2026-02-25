@@ -16,5 +16,6 @@ namespace ecomm.Domain.Entities
         public string mobile { get; set; }
         public DateTime dob { get; set; }
         public string gender { get; set; }
+        public string Role { get; set; } = "User"; 
     }
 }

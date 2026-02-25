@@ -15,9 +15,7 @@
 
     <div class="header-right">
         <input type="text" id="searchProduct" placeholder="Search product..." />
-        @* <button data-bs-toggle="modal" id="addprod" data-bs-target="#exampleModal" class="add-btn">
-            <i class="fa-solid fa-plus"></i> Add Product
-        </button> *@
+        
     </div>
 </div>
 
@@ -26,7 +24,7 @@
 
 
 <script>
-    debugger
+    
       var cid = '@cid';
     $(document).ready(function () {
 
@@ -36,6 +34,7 @@
             $.ajax({
                 url: `/api/UserApi/categproducts?cid=${cid}`,
                 type: 'GET',
+                headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
                 success: function (res) {
 
                     let container = $("#product_container");
@@ -103,7 +102,7 @@
 
     .card-image {
         width: 100%;
-        height: 180px; /* 🔹 Fixed height */
+        height: 220px; /* 🔹 Fixed height */
         overflow: hidden;
         border-radius: 20px;
     }
@@ -111,7 +110,7 @@
         .card-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* 🔹 Image stretch nahi hogi */
+             /* 🔹 Image stretch nahi hogi */
         }
 
     /* HEADER */

@@ -34,7 +34,7 @@
 
     .card-image {
         width: 100%;
-        height: 180px; /* 🔹 Fixed height */
+        height: 250px; /* 🔹 Fixed height */
         overflow: hidden;
         border-radius: 20px;
     }
@@ -42,7 +42,7 @@
         .card-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* 🔹 Image stretch nahi hogi */
+             /* 🔹 Image stretch nahi hogi */
         }
 
     .page-header {
@@ -167,15 +167,19 @@
         }
 </style>
 
-<!-- ================= SCRIPT ================= -->
+
 <script>
 
     $(document).ready(function () {
 
-        // Fetch Categories
-        $.ajax({
+        loadCategory();
+
+        
+        function loadCategory(){
+             $.ajax({
             url: '/api/UserApi/categories',
             type: 'GET',
+            headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
             success: function (res) {
 
                 let container = $("#category_sec");
@@ -189,9 +193,9 @@
                 $.each(res, function (ind, ele) {
 
                     let card = `
-                        <div class="category-card" data-name="${ele.c_name.toLowerCase()}">
+                        <div class="category-card mb-3" data-name="${ele.c_name.toLowerCase()}">
                             <div class="card-image">
-                                <img src=${ele.c_picture} alt="${ele.c_name}"/>    
+                                <img src=${ele.c_picture} alt="${ele.c_name}"/>
                             </div>
                             <div class="card-top mt-3">
                                 <div class="card-title">
@@ -211,15 +215,17 @@
                     container.append(card);
                 });
 
-                // Update total count
+                
                 $(".category-count").text(res.length + " Total");
             },
             error: function () {
                 Swal.fire("Error!", "Failed to load categories.", "error");
             }
         });
+        }
+       
 
-        // Search Filter
+        
         $("#searchInput").on("keyup", function () {
 
             let value = $(this).val().toLowerCase();

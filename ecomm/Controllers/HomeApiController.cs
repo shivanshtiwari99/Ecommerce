@@ -2,6 +2,10 @@
 using ecomm.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ecomm.Controllers
 {
@@ -9,10 +13,12 @@ namespace ecomm.Controllers
     [ApiController]
     public class HomeApiController : ControllerBase
     {
+        private readonly IConfiguration _configuration;
         private readonly IUserServices _user;
 
-        public HomeApiController(IUserServices user, ICategoryServies categ, IProductServices prod)
+        public HomeApiController(IUserServices user,IConfiguration configuration)
         {
+            _configuration = configuration;
             _user = user;
         }
         [HttpPost("register")]
@@ -24,10 +30,39 @@ namespace ecomm.Controllers
         [HttpPost("Login")]
         public IActionResult Login([FromBody] Login list)
         {
-            var l_data = _user.Login(list);
-            if (l_data.Count == 0)
+            // Validate user using your IUserServices
+            var userData = _user.Login(list); // returns list of matching users
+
+            if (userData.Count == 0)
                 return BadRequest("Invalid Email Or Password");
-            return Ok(l_data);
+
+            // ✅ Get role from your user (for demo, assuming first user)
+            var role = userData[0].role ?? "User";
+
+            // ✅ Create JWT token
+            var claims = new[]
+            {
+        new Claim(System.Security.Claims.ClaimTypes.Name, list.email),
+        new Claim(System.Security.Claims.ClaimTypes.Role, role)
+    };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                _configuration["Jwt:Key"])); // Inject IConfiguration in controller
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:DurationInMinutes"])),
+                signingCredentials: creds
+            );
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                role = role
+            });
         }
     }
 }
