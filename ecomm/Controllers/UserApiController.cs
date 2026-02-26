@@ -24,6 +24,7 @@ namespace ecomm.Controllers
             
         }
 
+        [AllowAnonymous]
         [HttpGet("emailuser")]
         public IActionResult GetUserByEmail(string? email)
         {

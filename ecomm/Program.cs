@@ -11,6 +11,19 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IUserServices, UserRepo>();
 builder.Services.AddScoped<ICategoryServies, CategoryRepo>();
 builder.Services.AddScoped<IProductServices, ProductRepo>();
+builder.Services.AddScoped<IProductServices, ProductRepo>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
 
 // ✅ JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -52,6 +65,25 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app.UseCors("AllowAngular");
 
 // ✅ Important: Authentication before Authorization
 app.UseAuthentication();
